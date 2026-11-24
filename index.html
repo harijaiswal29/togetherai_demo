@@ -1,0 +1,863 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Together AI Guide</title>
+<meta name="description" content="A visual, beginner-friendly guide to using open-source AI models through Together AI, with runnable code.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f7f7fb; --surface:#ffffff; --surface-2:#f0f1f7; --ink:#14152a; --ink-2:#4a4d68; --ink-3:#7c7f99;
+  --line:#e1e3ee; --brand:#3b5bfd; --brand-soft:#e7ecff; --accent:#0f9d76; --accent-soft:#dcf5ec;
+  --warn:#c2580a; --warn-soft:#fdeedd; --pink:#c2307a; --pink-soft:#fbe3ef;
+  --code-bg:#14162b; --code-ink:#e6e8f5; --c-str:#a5e3a0; --c-kw:#c9a6ff; --c-com:#7f86ad; --c-num:#ffc78a; --c-fn:#8cc8ff;
+  --shadow:0 1px 2px rgba(20,21,42,.05),0 8px 24px rgba(20,21,42,.06);
+  --radius:16px;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e0f1a; --surface:#171829; --surface-2:#1f2135; --ink:#eef0fb; --ink-2:#b4b7d0; --ink-3:#8487a3;
+    --line:#2b2d45; --brand:#7d93ff; --brand-soft:#232a52; --accent:#3ccf9f; --accent-soft:#16352c;
+    --warn:#ffa35c; --warn-soft:#3a2614; --pink:#ff7fbf; --pink-soft:#3a1a2c;
+    --code-bg:#0a0b14; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e0f1a; --surface:#171829; --surface-2:#1f2135; --ink:#eef0fb; --ink-2:#b4b7d0; --ink-3:#8487a3;
+  --line:#2b2d45; --brand:#7d93ff; --brand-soft:#232a52; --accent:#3ccf9f; --accent-soft:#16352c;
+  --warn:#ffa35c; --warn-soft:#3a2614; --pink:#ff7fbf; --pink-soft:#3a1a2c;
+  --code-bg:#0a0b14; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 Inter,system-ui,-apple-system,Segoe UI,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--brand)}
+code,pre,.mono{font-family:"JetBrains Mono",ui-monospace,Menlo,monospace}
+:not(pre)>code{background:var(--surface-2);padding:.1em .4em;border-radius:6px;font-size:.88em}
+.wrap{max-width:1040px;margin:0 auto;padding:0 16px}
+
+/* top nav */
+nav.top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 85%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+nav.top .wrap{display:flex;align-items:center;gap:16px;height:56px}
+.logo{font-weight:800;letter-spacing:-.02em;display:flex;align-items:center;gap:8px;white-space:nowrap}
+.logo i{width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,var(--brand),var(--accent));display:inline-block}
+.navlinks{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;flex:1}
+.navlinks::-webkit-scrollbar{display:none}
+.navlinks a{font-size:14px;color:var(--ink-2);text-decoration:none;padding:6px 10px;border-radius:8px;white-space:nowrap}
+.navlinks a:hover{background:var(--surface-2);color:var(--ink)}
+#themeBtn{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;width:36px;height:36px;cursor:pointer;flex:none}
+
+/* hero */
+header.hero{padding:64px 0 40px}
+.eyebrow{display:inline-block;font-size:13px;font-weight:600;color:var(--brand);background:var(--brand-soft);padding:4px 12px;border-radius:99px}
+h1{font-size:clamp(34px,6vw,56px);line-height:1.05;letter-spacing:-.035em;margin:16px 0 16px;font-weight:800}
+h1 em{font-style:normal;background:linear-gradient(90deg,var(--brand),var(--accent));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lede{font-size:19px;color:var(--ink-2);max-width:680px;margin:0}
+.hero-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:32px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.stat b{display:block;font-size:15px}
+.stat span{font-size:14px;color:var(--ink-2)}
+
+/* sections */
+section{padding:48px 0;border-top:1px solid var(--line);scroll-margin-top:56px}
+.sec-num{font:600 13px/1 "JetBrains Mono",monospace;color:var(--ink-3);letter-spacing:.06em}
+h2{font-size:clamp(26px,4vw,34px);letter-spacing:-.025em;line-height:1.15;margin:8px 0 12px}
+h3{font-size:19px;letter-spacing:-.01em;margin:28px 0 8px}
+.sub{color:var(--ink-2);max-width:720px;margin:0 0 24px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.grid2>*,.grid3>*,.grid4>*,.anno>*,.calc>*,.stream-demo>*{min-width:0}
+@media (max-width:820px){.grid2,.grid3{grid-template-columns:1fr}.grid4{grid-template-columns:1fr 1fr}}
+@media (max-width:480px){.grid4{grid-template-columns:1fr}}
+.example{display:flex;gap:12px;align-items:flex-start;background:var(--accent-soft);border-radius:14px;padding:14px 16px;margin:16px 0;color:var(--ink)}
+.example .ico{font-size:22px;line-height:1.2}
+.example b{color:var(--accent)}
+.note{background:var(--warn-soft);border-radius:14px;padding:14px 16px;margin:16px 0}
+.note b{color:var(--warn)}
+svg{display:block;max-width:100%;height:auto}
+svg text{font-family:Inter,system-ui,sans-serif}
+
+/* analogy */
+.analogy h3{margin-top:0;display:flex;align-items:center;gap:8px}
+.pill{font-size:12px;font-weight:600;padding:3px 10px;border-radius:99px}
+.pill.bad{background:var(--pink-soft);color:var(--pink)}
+.pill.good{background:var(--accent-soft);color:var(--accent)}
+.analogy ul{margin:12px 0 0;padding-left:20px;color:var(--ink-2)}
+.analogy li{margin:4px 0}
+
+/* steps */
+.step{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+.step .n{width:34px;height:34px;border-radius:10px;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:700;margin-bottom:12px}
+.step h4{margin:0 0 6px;font-size:16px}
+.step p{margin:0;font-size:14.5px;color:var(--ink-2)}
+.step code{font-size:12.5px}
+
+/* code */
+.codebox{background:var(--code-bg);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);margin:16px 0}
+.codebar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px 8px 16px;border-bottom:1px solid rgba(255,255,255,.07)}
+.codebar .fname{color:#9aa0c7;font:500 13px "JetBrains Mono",monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.copy{background:rgba(255,255,255,.08);color:#dfe2f5;border:0;border-radius:8px;padding:5px 12px;font:600 12px Inter,sans-serif;cursor:pointer;flex:none}
+.copy:hover{background:rgba(255,255,255,.16)}
+pre{margin:0;padding:16px 18px;overflow-x:auto;color:var(--code-ink);font-size:13.5px;line-height:1.65;tab-size:4}
+.tok-s{color:var(--c-str)}.tok-k{color:var(--c-kw)}.tok-c{color:var(--c-com);font-style:italic}.tok-n{color:var(--c-num)}.tok-f{color:var(--c-fn)}
+.tabs{display:flex;gap:4px;padding:6px 6px 0;background:var(--code-bg);overflow-x:auto}
+.tabs button{background:transparent;border:0;color:#8f95bd;font:600 13px Inter,sans-serif;padding:9px 14px;border-radius:10px 10px 0 0;cursor:pointer;white-space:nowrap}
+.tabs button[aria-selected="true"]{background:rgba(255,255,255,.07);color:#fff}
+.tabpanel[hidden]{display:none}
+
+/* annotated */
+.anno{display:grid;grid-template-columns:1.25fr 1fr;gap:20px;align-items:start}
+@media (max-width:820px){.anno{grid-template-columns:1fr}}
+.callouts{display:flex;flex-direction:column;gap:10px}
+.callout{display:flex;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.callout .dot{flex:none;width:26px;height:26px;border-radius:99px;display:grid;place-items:center;color:#fff;font:700 13px Inter;margin-top:1px}
+.callout p{margin:0;font-size:14.5px;color:var(--ink-2)}
+.callout b{color:var(--ink)}
+.mark{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:99px;color:#fff;font:700 10px Inter;margin-left:6px;vertical-align:middle;font-style:normal}
+
+/* chat bubbles */
+.chat{display:flex;flex-direction:column;gap:10px}
+.bubble{max-width:88%;padding:10px 14px;border-radius:16px;font-size:14.5px;position:relative}
+.bubble small{display:block;font:600 11px "JetBrains Mono",monospace;letter-spacing:.04em;margin-bottom:2px;opacity:.8}
+.b-sys{align-self:center;background:var(--warn-soft);border:1px dashed var(--warn);max-width:100%;text-align:center}
+.b-sys small{color:var(--warn)}
+.b-user{align-self:flex-end;background:var(--brand);color:#fff;border-bottom-right-radius:4px}
+.b-bot{align-self:flex-start;background:var(--surface-2);border-bottom-left-radius:4px}
+.b-bot small{color:var(--accent)}
+
+/* temperature */
+.slider-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:8px 0 16px}
+input[type=range]{flex:1;min-width:180px;accent-color:var(--brand)}
+.tval{font:700 22px "JetBrains Mono",monospace;color:var(--brand);min-width:60px}
+.temp-outs{display:grid;gap:8px}
+.temp-out{background:var(--surface-2);border-radius:12px;padding:10px 14px;font-size:15px;transition:opacity .2s}
+.temp-label{font-weight:600;font-size:14px;color:var(--ink-2)}
+
+/* calculator */
+.calc{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+@media (max-width:820px){.calc{grid-template-columns:1fr}}
+.field{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+.field label{font-size:13.5px;font-weight:600;color:var(--ink-2)}
+.field input,.field select{font:inherit;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);width:100%}
+.bigcost{font:800 40px/1.1 Inter;letter-spacing:-.03em;color:var(--accent);margin:4px 0}
+.costrow{display:flex;justify-content:space-between;border-bottom:1px dashed var(--line);padding:7px 0;font-size:14.5px}
+.costrow span:last-child{font-family:"JetBrains Mono",monospace}
+.tokenized{display:flex;flex-wrap:wrap;gap:3px;margin-top:10px}
+.tokenized span{font:13px "JetBrains Mono",monospace;padding:2px 5px;border-radius:5px}
+
+/* stream demo */
+.stream-demo{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:820px){.stream-demo{grid-template-columns:1fr}}
+.screen{background:var(--surface-2);border-radius:12px;padding:14px;min-height:150px;font-size:15px}
+.screen .wait{color:var(--ink-3);font-style:italic}
+.btn{font:600 14px Inter;background:var(--brand);color:#fff;border:0;border-radius:10px;padding:10px 18px;cursor:pointer}
+.btn:hover{filter:brightness(1.08)}
+.cursor{display:inline-block;width:8px;height:1.05em;background:var(--brand);vertical-align:text-bottom;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+
+/* table */
+.tbl{width:100%;border-collapse:collapse;font-size:14.5px}
+.tbl th{text-align:left;font-size:12.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-3);font-weight:600;padding:10px 12px;border-bottom:1px solid var(--line)}
+.tbl td{padding:12px;border-bottom:1px solid var(--line);vertical-align:top}
+.tbl td code{font-size:12.5px;word-break:break-all}
+.tblwrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.tag{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:99px;background:var(--brand-soft);color:var(--brand);margin:2px 4px 2px 0}
+
+/* demos list */
+.demo{display:flex;gap:14px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.demo .f{font:600 13px "JetBrains Mono",monospace;color:var(--brand)}
+.demo p{margin:2px 0 0;font-size:14.5px;color:var(--ink-2)}
+.demo .em{font-size:24px;line-height:1}
+
+footer{padding:40px 0 60px;color:var(--ink-3);font-size:14px;border-top:1px solid var(--line)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+.flow-dash{stroke-dasharray:6 6;animation:dash 1.2s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-24}}
+</style>
+</head>
+<body>
+
+<nav class="top" aria-label="Sections">
+  <div class="wrap">
+    <div class="logo"><i></i>Together AI Guide</div>
+    <div class="navlinks">
+      <a href="#why">Why</a><a href="#flow">How it works</a><a href="#setup">Setup</a>
+      <a href="#first">First call</a><a href="#knobs">Settings</a><a href="#cost">Cost</a>
+      <a href="#stream">Streaming</a><a href="#memory">Memory</a><a href="#models">Models</a>
+      <a href="#embed">Embeddings</a><a href="#demos">Demos</a><a href="#errors">Errors</a>
+    </div>
+    <button id="themeBtn" aria-label="Toggle dark mode" title="Toggle theme">◐</button>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow">Beginner guide · Python &amp; JavaScript</span>
+    <h1>Use <em>open-source AI models</em><br>without owning a single GPU.</h1>
+    <p class="lede">Together AI runs Llama, DeepSeek, Qwen, Mistral, FLUX and 100+ other open models in the cloud. You send a question over the internet and get an answer back, paying only for what you use. This guide shows the idea in pictures, then the code.</p>
+    <div class="hero-stats">
+      <div class="stat"><b>🔑 One API key</b><span>works for every model</span></div>
+      <div class="stat"><b>🔁 Swap models</b><span>by changing one string</span></div>
+      <div class="stat"><b>🔌 OpenAI-compatible</b><span>reuse existing code</span></div>
+      <div class="stat"><b>💸 Pay per token</b><span>no servers to rent</span></div>
+    </div>
+  </div>
+</header>
+
+<!-- 1. WHY -->
+<section id="why">
+  <div class="wrap">
+    <div class="sec-num">01 · THE BIG IDEA</div>
+    <h2>Buy a car, or book a ride?</h2>
+    <p class="sub">Open-source models are free to download, but running a big one needs expensive GPU hardware. Together AI is like a ride-hailing app for AI models. You say where you want to go, and they handle the car, the fuel and the driver.</p>
+
+    <div class="grid2">
+      <div class="card analogy">
+        <h3>🚗 Run it yourself <span class="pill bad">Buying a car</span></h3>
+        <svg viewBox="0 0 420 150" role="img" aria-label="Self-hosting: you manage GPU, drivers, model files and scaling yourself">
+          <rect x="10" y="20" width="110" height="110" rx="14" fill="var(--pink-soft)" stroke="var(--pink)" stroke-width="1.5"/>
+          <text x="65" y="62" text-anchor="middle" font-size="30">🖥️</text>
+          <text x="65" y="95" text-anchor="middle" font-size="12" font-weight="700" fill="var(--ink)">Your GPU server</text>
+          <text x="65" y="112" text-anchor="middle" font-size="11" fill="var(--ink-2)">$$$ / month</text>
+          <g font-size="12" fill="var(--ink-2)">
+            <rect x="150" y="18" width="260" height="24" rx="8" fill="var(--surface-2)"/><text x="162" y="34">⬇️ Download 140 GB of model weights</text>
+            <rect x="150" y="48" width="260" height="24" rx="8" fill="var(--surface-2)"/><text x="162" y="64">🧩 Install CUDA, drivers, vLLM…</text>
+            <rect x="150" y="78" width="260" height="24" rx="8" fill="var(--surface-2)"/><text x="162" y="94">📈 Handle traffic spikes yourself</text>
+            <rect x="150" y="108" width="260" height="24" rx="8" fill="var(--surface-2)"/><text x="162" y="124">💤 Pay even when nobody uses it</text>
+          </g>
+        </svg>
+        <ul><li>Full control, full responsibility</li><li>Makes sense at very large, steady scale</li></ul>
+      </div>
+      <div class="card analogy">
+        <h3>🚕 Together AI <span class="pill good">Booking a ride</span></h3>
+        <svg viewBox="0 0 420 150" role="img" aria-label="Together AI: your code sends a request and gets an answer, Together handles the GPUs">
+          <rect x="10" y="45" width="100" height="60" rx="14" fill="var(--brand-soft)" stroke="var(--brand)" stroke-width="1.5"/>
+          <text x="60" y="72" text-anchor="middle" font-size="22">💻</text>
+          <text x="60" y="94" text-anchor="middle" font-size="12" font-weight="700" fill="var(--ink)">Your code</text>
+          <path d="M115 65 H285" stroke="var(--brand)" stroke-width="2.5" class="flow-dash" fill="none"/>
+          <path d="M285 88 H115" stroke="var(--accent)" stroke-width="2.5" class="flow-dash" fill="none"/>
+          <text x="200" y="57" text-anchor="middle" font-size="11.5" fill="var(--brand)" font-weight="600">question →</text>
+          <text x="200" y="104" text-anchor="middle" font-size="11.5" fill="var(--accent)" font-weight="600">← answer</text>
+          <rect x="290" y="20" width="120" height="110" rx="14" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.5"/>
+          <text x="350" y="60" text-anchor="middle" font-size="26">☁️</text>
+          <text x="350" y="88" text-anchor="middle" font-size="12" font-weight="700" fill="var(--ink)">Together AI</text>
+          <text x="350" y="105" text-anchor="middle" font-size="11" fill="var(--ink-2)">GPUs · models</text>
+          <text x="350" y="120" text-anchor="middle" font-size="11" fill="var(--ink-2)">scaling · uptime</text>
+        </svg>
+        <ul><li>Start in about 5 minutes. Pay cents per million words.</li><li>Try 10 different models in an afternoon</li></ul>
+      </div>
+    </div>
+
+    <div class="example"><span class="ico">🍕</span><div><b>Real-world example:</b> You want to compare pizza from 5 restaurants. You don't build 5 kitchens. You order from each and taste. Together AI is the delivery app, and the open-source models are the restaurants.</div></div>
+  </div>
+</section>
+
+<!-- 2. FLOW -->
+<section id="flow">
+  <div class="wrap">
+    <div class="sec-num">02 · HOW A REQUEST TRAVELS</div>
+    <h2>What happens when you call the API</h2>
+    <p class="sub">Every example in this guide follows the same round trip. Knowing these 5 stops makes the rest of the guide easy.</p>
+    <div class="card">
+      <svg viewBox="0 0 960 250" role="img" aria-label="Request flow: your app builds messages, adds API key, sends HTTPS to api.together.ai, the chosen model runs on GPUs, and the answer returns with token usage">
+        <defs>
+          <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink-3)"/></marker>
+        </defs>
+        <g font-size="13">
+          <!-- boxes -->
+          <g><rect x="10" y="40" width="160" height="110" rx="16" fill="var(--brand-soft)" stroke="var(--brand)"/>
+            <text x="90" y="78" text-anchor="middle" font-size="26">💻</text>
+            <text x="90" y="106" text-anchor="middle" font-weight="700" fill="var(--ink)">Your app</text>
+            <text x="90" y="126" text-anchor="middle" fill="var(--ink-2)" font-size="12">builds “messages”</text></g>
+          <g><rect x="205" y="40" width="160" height="110" rx="16" fill="var(--warn-soft)" stroke="var(--warn)"/>
+            <text x="285" y="78" text-anchor="middle" font-size="26">🔑</text>
+            <text x="285" y="106" text-anchor="middle" font-weight="700" fill="var(--ink)">API key</text>
+            <text x="285" y="126" text-anchor="middle" fill="var(--ink-2)" font-size="12">proves it’s you</text></g>
+          <g><rect x="400" y="40" width="160" height="110" rx="16" fill="var(--surface-2)" stroke="var(--line)"/>
+            <text x="480" y="78" text-anchor="middle" font-size="26">🌐</text>
+            <text x="480" y="106" text-anchor="middle" font-weight="700" fill="var(--ink)">api.together.ai</text>
+            <text x="480" y="126" text-anchor="middle" fill="var(--ink-2)" font-size="12">routes to the model</text></g>
+          <g><rect x="595" y="40" width="160" height="110" rx="16" fill="var(--accent-soft)" stroke="var(--accent)"/>
+            <text x="675" y="78" text-anchor="middle" font-size="26">🧠</text>
+            <text x="675" y="106" text-anchor="middle" font-weight="700" fill="var(--ink)">Model on GPU</text>
+            <text x="675" y="126" text-anchor="middle" fill="var(--ink-2)" font-size="12">Llama · Qwen · DeepSeek</text></g>
+          <g><rect x="790" y="40" width="160" height="110" rx="16" fill="var(--pink-soft)" stroke="var(--pink)"/>
+            <text x="870" y="78" text-anchor="middle" font-size="26">📨</text>
+            <text x="870" y="106" text-anchor="middle" font-weight="700" fill="var(--ink)">Response</text>
+            <text x="870" y="126" text-anchor="middle" fill="var(--ink-2)" font-size="12">text + token usage</text></g>
+          <!-- arrows -->
+          <path d="M172 95 H200" stroke="var(--ink-3)" stroke-width="2" marker-end="url(#ah)"/>
+          <path d="M367 95 H395" stroke="var(--ink-3)" stroke-width="2" marker-end="url(#ah)"/>
+          <path d="M562 95 H590" stroke="var(--ink-3)" stroke-width="2" marker-end="url(#ah)"/>
+          <path d="M757 95 H785" stroke="var(--ink-3)" stroke-width="2" marker-end="url(#ah)"/>
+          <path d="M870 152 V200 Q870 215 855 215 H105 Q90 215 90 200 V158" stroke="var(--accent)" stroke-width="2" fill="none" class="flow-dash" marker-end="url(#ah)"/>
+          <text x="480" y="236" text-anchor="middle" fill="var(--accent)" font-weight="600" font-size="13">answer comes back in about 0.5 to 5 seconds, and you pay for tokens in + tokens out</text>
+          <!-- step numbers -->
+          <g font-weight="700" font-size="12" fill="#fff">
+            <circle cx="22" cy="40" r="13" fill="var(--brand)"/><text x="22" y="44" text-anchor="middle">1</text>
+            <circle cx="217" cy="40" r="13" fill="var(--warn)"/><text x="217" y="44" text-anchor="middle">2</text>
+            <circle cx="412" cy="40" r="13" fill="var(--ink-3)"/><text x="412" y="44" text-anchor="middle">3</text>
+            <circle cx="607" cy="40" r="13" fill="var(--accent)"/><text x="607" y="44" text-anchor="middle">4</text>
+            <circle cx="802" cy="40" r="13" fill="var(--pink)"/><text x="802" y="44" text-anchor="middle">5</text>
+          </g>
+        </g>
+      </svg>
+    </div>
+    <div class="example"><span class="ico">✉️</span><div><b>Think of it like sending a letter.</b> Your message is the letter, the API key is the stamp, api.together.ai is the post office, the model writes the reply, and the token count is the postage bill.</div></div>
+  </div>
+</section>
+
+<!-- 3. SETUP -->
+<section id="setup">
+  <div class="wrap">
+    <div class="sec-num">03 · SETUP</div>
+    <h2>Four steps to your first answer</h2>
+    <p class="sub">It takes about five minutes. You only do this once.</p>
+    <div class="grid4">
+      <div class="step"><div class="n">1</div><h4>Sign up</h4><p>Create an account at <a href="https://www.together.ai" target="_blank" rel="noopener">together.ai</a> and add a little credit under Billing.</p></div>
+      <div class="step"><div class="n">2</div><h4>Copy your API key</h4><p>Dashboard → <b>Settings → API Keys</b>. Treat it like a password.</p></div>
+      <div class="step"><div class="n">3</div><h4>Install the SDK</h4><p><code>pip install together</code><br>or<br><code>npm i together-ai</code></p></div>
+      <div class="step"><div class="n">4</div><h4>Save the key</h4><p>Put it in an environment variable named <code>TOGETHER_API_KEY</code>.</p></div>
+    </div>
+
+    <div class="codebox">
+      <div class="tabs" role="tablist" data-group="setup">
+        <button role="tab" aria-selected="true" data-tab="setup-mac">macOS / Linux</button>
+        <button role="tab" aria-selected="false" data-tab="setup-win">Windows (PowerShell)</button>
+        <button role="tab" aria-selected="false" data-tab="setup-env">.env file (this repo)</button>
+      </div>
+      <div class="tabpanel" id="setup-mac"><div class="codebar"><span class="fname">terminal</span><button class="copy">Copy</button></div>
+<pre data-lang="sh">python -m venv .venv &amp;&amp; source .venv/bin/activate
+pip install -r requirements.txt          # together, openai, python-dotenv
+export TOGETHER_API_KEY="paste-your-key-here"
+python python/01_first_chat.py</pre></div>
+      <div class="tabpanel" id="setup-win" hidden><div class="codebar"><span class="fname">PowerShell</span><button class="copy">Copy</button></div>
+<pre data-lang="sh">python -m venv .venv; .venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+$env:TOGETHER_API_KEY = "paste-your-key-here"
+python python\01_first_chat.py</pre></div>
+      <div class="tabpanel" id="setup-env" hidden><div class="codebar"><span class="fname">.env (copy from .env.example; already in .gitignore)</span><button class="copy">Copy</button></div>
+<pre data-lang="sh"># The demos load this automatically via python-dotenv
+TOGETHER_API_KEY=paste-your-key-here
+# TOGETHER_MODEL=meta-llama/Llama-3.3-70B-Instruct-Turbo   # optional</pre></div>
+    </div>
+    <div class="note"><b>⚠️ Never commit your key to GitHub.</b> Bots scan public repos for keys within minutes. Keep it in <code>.env</code> (this repo's <code>.gitignore</code> already excludes it) or in your shell.</div>
+  </div>
+</section>
+
+<!-- 4. FIRST CALL -->
+<section id="first">
+  <div class="wrap">
+    <div class="sec-num">04 · YOUR FIRST CALL</div>
+    <h2>The anatomy of a request</h2>
+    <p class="sub">Here is <code>python/01_first_chat.py</code>, a travel helper. Each numbered part is explained on the right.</p>
+    <div class="anno">
+      <div class="codebox" style="margin:0">
+        <div class="codebar"><span class="fname">python/01_first_chat.py</span><button class="copy">Copy</button></div>
+<pre data-lang="py">from together import Together
+
+client = Together()   # ① reads TOGETHER_API_KEY
+
+response = client.chat.completions.create(
+    model="meta-llama/Llama-3.3-70B-Instruct-Turbo",   # ②
+    messages=[                                           # ③
+        {"role": "system",
+         "content": "You are a friendly travel assistant. Answer in 5 bullet points."},
+        {"role": "user",
+         "content": "I'm going to Goa in December for 4 days. What should I pack?"},
+    ],
+    temperature=0.7,    # ④ creativity dial
+    max_tokens=300,     # ⑤ answer length cap
+)
+
+print(response.choices[0].message.content)   # ⑥
+print(response.usage)                        # ⑦ tokens you pay for</pre>
+      </div>
+      <div class="callouts">
+        <div class="callout"><span class="dot" style="background:var(--brand)">1</span><p><b>Client.</b> Your connection to Together. It finds your key automatically.</p></div>
+        <div class="callout"><span class="dot" style="background:var(--accent)">2</span><p><b>Model.</b> Which open-source model answers. Swap the string to switch brains.</p></div>
+        <div class="callout"><span class="dot" style="background:var(--warn)">3</span><p><b>Messages.</b> The conversation so far. <code>system</code> = the rules, <code>user</code> = the human.</p></div>
+        <div class="callout"><span class="dot" style="background:var(--pink)">4</span><p><b>Temperature.</b> 0 = same answer every time; higher = more varied.</p></div>
+        <div class="callout"><span class="dot" style="background:var(--ink-3)">5</span><p><b>max_tokens.</b> A ceiling on answer length (and cost).</p></div>
+        <div class="callout"><span class="dot" style="background:var(--brand)">6</span><p><b>The answer</b> lives at <code>choices[0].message.content</code>.</p></div>
+        <div class="callout"><span class="dot" style="background:var(--accent)">7</span><p><b>Usage</b> tells you exactly how many tokens went in and out.</p></div>
+      </div>
+    </div>
+
+    <h3>Messages, visualised</h3>
+    <p class="sub" style="margin-bottom:12px">The <code>messages</code> list is a script for a play. Each line says who is speaking.</p>
+    <div class="grid2">
+      <div class="card chat" aria-label="Example conversation">
+        <div class="bubble b-sys"><small>SYSTEM · the director's notes</small>You are a friendly travel assistant. Answer in 5 bullet points.</div>
+        <div class="bubble b-user"><small>USER · the human</small>I'm going to Goa in December for 4 days. What should I pack?</div>
+        <div class="bubble b-bot"><small>ASSISTANT · the model's reply</small>• Light cotton clothes<br>• Sunscreen SPF 50<br>• Flip-flops &amp; one pair of walking shoes<br>• A light jacket for evenings<br>• Power bank for beach days</div>
+      </div>
+      <div class="card">
+        <table class="tbl">
+          <thead><tr><th>Role</th><th>Who / what</th><th>Real-world parallel</th></tr></thead>
+          <tbody>
+            <tr><td><span class="tag" style="background:var(--warn-soft);color:var(--warn)">system</span></td><td>Sets personality, rules, format</td><td>A job description handed to a new employee</td></tr>
+            <tr><td><span class="tag">user</span></td><td>What the person asks</td><td>The customer at the counter</td></tr>
+            <tr><td><span class="tag" style="background:var(--accent-soft);color:var(--accent)">assistant</span></td><td>What the model said before</td><td>The employee's earlier replies</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <h3>The same call in other languages</h3>
+    <div class="codebox">
+      <div class="tabs" role="tablist" data-group="lang">
+        <button role="tab" aria-selected="true" data-tab="l-py">Python SDK</button>
+        <button role="tab" aria-selected="false" data-tab="l-js">JavaScript / Node</button>
+        <button role="tab" aria-selected="false" data-tab="l-oai">OpenAI SDK (2-line switch)</button>
+        <button role="tab" aria-selected="false" data-tab="l-curl">curl (raw HTTP)</button>
+      </div>
+      <div class="tabpanel" id="l-py"><div class="codebar"><span class="fname">pip install together</span><button class="copy">Copy</button></div>
+<pre data-lang="py">from together import Together
+
+client = Together()
+r = client.chat.completions.create(
+    model="meta-llama/Llama-3.3-70B-Instruct-Turbo",
+    messages=[{"role": "user", "content": "Explain APIs to a 10 year old in 2 lines."}],
+)
+print(r.choices[0].message.content)</pre></div>
+      <div class="tabpanel" id="l-js" hidden><div class="codebar"><span class="fname">npm i together-ai · javascript/chat.mjs</span><button class="copy">Copy</button></div>
+<pre data-lang="js">import Together from "together-ai";
+
+const together = new Together(); // reads TOGETHER_API_KEY
+const r = await together.chat.completions.create({
+  model: "meta-llama/Llama-3.3-70B-Instruct-Turbo",
+  messages: [{ role: "user", content: "Explain APIs to a 10 year old in 2 lines." }],
+});
+console.log(r.choices[0].message.content);</pre></div>
+      <div class="tabpanel" id="l-oai" hidden><div class="codebar"><span class="fname">pip install openai · python/05_openai_sdk.py</span><button class="copy">Copy</button></div>
+<pre data-lang="py">import os
+from openai import OpenAI
+
+client = OpenAI(
+    api_key=os.environ["TOGETHER_API_KEY"],      # change #1
+    base_url="https://api.together.ai/v1",       # change #2
+)
+r = client.chat.completions.create(
+    model="meta-llama/Llama-3.3-70B-Instruct-Turbo",
+    messages=[{"role": "user", "content": "Explain APIs to a 10 year old in 2 lines."}],
+)
+print(r.choices[0].message.content)</pre></div>
+      <div class="tabpanel" id="l-curl" hidden><div class="codebar"><span class="fname">curl_example.sh</span><button class="copy">Copy</button></div>
+<pre data-lang="sh">curl -s https://api.together.ai/v1/chat/completions \
+  -H "Authorization: Bearer $TOGETHER_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "meta-llama/Llama-3.3-70B-Instruct-Turbo",
+    "messages": [{"role": "user", "content": "Explain APIs to a 10 year old in 2 lines."}]
+  }'</pre></div>
+    </div>
+    <div class="example"><span class="ico">🔌</span><div><b>Why the OpenAI switch works:</b> Together uses the same request "shape" as OpenAI, the way every phone charger fits a standard USB-C socket. Tools built for OpenAI, such as LangChain, LlamaIndex and Vercel AI SDK, usually work after you change the <code>base_url</code> and key.</div></div>
+  </div>
+</section>
+
+<!-- 5. KNOBS -->
+<section id="knobs">
+  <div class="wrap">
+    <div class="sec-num">05 · THE SETTINGS YOU'LL ACTUALLY USE</div>
+    <h2>Temperature: the creativity dial</h2>
+    <p class="sub">Drag the slider. These are illustrative answers to <i>“Suggest a name for a chai café.”</i>, showing how the style changes.</p>
+    <div class="card">
+      <div class="slider-row">
+        <span class="temp-label">temperature =</span>
+        <span class="tval" id="tval">0.7</span>
+        <input type="range" id="temp" min="0" max="1.5" step="0.1" value="0.7" aria-label="Temperature">
+      </div>
+      <div class="temp-outs" id="tempOuts"></div>
+      <p id="tempHint" style="margin:14px 0 0;color:var(--ink-2);font-size:14.5px"></p>
+    </div>
+
+    <div class="grid3" style="margin-top:16px">
+      <div class="card"><h3 style="margin-top:0">🎯 <code>temperature</code></h3><p style="margin:0;color:var(--ink-2);font-size:14.5px">Use <b>0–0.3</b> for facts, extraction and code. Use <b>0.7–1.0</b> for writing and brainstorming.</p></div>
+      <div class="card"><h3 style="margin-top:0">📏 <code>max_tokens</code></h3><p style="margin:0;color:var(--ink-2);font-size:14.5px">A hard cap on answer length. If the reply cuts off mid-sentence, raise this.</p></div>
+      <div class="card"><h3 style="margin-top:0">🧾 <code>response_format</code></h3><p style="margin:0;color:var(--ink-2);font-size:14.5px"><code>{"type": "json_object"}</code> makes the model return JSON your code can parse. See demo 06.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 6. COST -->
+<section id="cost">
+  <div class="wrap">
+    <div class="sec-num">06 · TOKENS &amp; COST</div>
+    <h2>You pay per token, like an electricity meter</h2>
+    <p class="sub">A <b>token</b> is a chunk of text, roughly ¾ of an English word. Prices are quoted per <b>1 million tokens</b>, with separate rates for input (your prompt) and output (the answer).</p>
+    <div class="card">
+      <div class="calc">
+        <div>
+          <div class="field"><label for="ctext">Try it: type a prompt and see it split into (approximate) tokens</label>
+            <input id="ctext" value="I'm going to Goa in December. What should I pack?"></div>
+          <div class="tokenized" id="tokViz" aria-live="polite"></div>
+          <p style="font-size:13px;color:var(--ink-3);margin:8px 0 16px">Visual approximation only. Real tokenizers differ slightly per model.</p>
+          <div class="grid2" style="gap:10px">
+            <div class="field"><label for="creq">Requests per day</label><input id="creq" type="number" min="0" value="1000"></div>
+            <div class="field"><label for="cout">Answer length (words)</label><input id="cout" type="number" min="0" value="150"></div>
+            <div class="field"><label for="pin">$ per 1M input tokens</label><input id="pin" type="number" min="0" step="0.01" value="0.88"></div>
+            <div class="field"><label for="pout">$ per 1M output tokens</label><input id="pout" type="number" min="0" step="0.01" value="0.88"></div>
+          </div>
+          <p style="font-size:13px;color:var(--ink-3);margin:0">Prices here are examples. Check the live rates at <a href="https://www.together.ai/pricing" target="_blank" rel="noopener">together.ai/pricing</a> or run <code>python/00_list_models.py</code>.</p>
+        </div>
+        <div>
+          <div class="temp-label">Estimated cost per month</div>
+          <div class="bigcost" id="cmonth">$0.00</div>
+          <div class="costrow"><span>Input tokens / request</span><span id="cin">0</span></div>
+          <div class="costrow"><span>Output tokens / request</span><span id="cot">0</span></div>
+          <div class="costrow"><span>Cost per request</span><span id="creqc">$0</span></div>
+          <div class="costrow"><span>Cost per day</span><span id="cday">$0</span></div>
+          <div class="example" style="margin-top:16px"><span class="ico">⚡</span><div><b>Rule of thumb:</b> small models (7–8B) cost a few cents per million tokens, and big ones (70B+) cost under a few dollars. A hobby chatbot often costs less than a cup of chai per month.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 7. STREAMING -->
+<section id="stream">
+  <div class="wrap">
+    <div class="sec-num">07 · STREAMING</div>
+    <h2>Show words as they're written</h2>
+    <p class="sub">Without streaming, the user stares at a blank screen until the whole answer is ready. With streaming, words appear immediately, like the typing effect in ChatGPT. Total time is the same, but it <i>feels</i> much faster.</p>
+    <div class="card">
+      <button class="btn" id="streamBtn">▶ Run both</button>
+      <div class="stream-demo" style="margin-top:16px">
+        <div><div class="temp-label" style="margin-bottom:6px">❌ <code>stream=False</code>: wait for all of it</div><div class="screen" id="scrA"><span class="wait">Press “Run both”…</span></div></div>
+        <div><div class="temp-label" style="margin-bottom:6px">✅ <code>stream=True</code>: word by word</div><div class="screen" id="scrB"><span class="wait">Press “Run both”…</span></div></div>
+      </div>
+    </div>
+    <div class="codebox">
+      <div class="codebar"><span class="fname">python/02_streaming.py</span><button class="copy">Copy</button></div>
+<pre data-lang="py">stream = client.chat.completions.create(
+    model="meta-llama/Llama-3.3-70B-Instruct-Turbo",
+    messages=[{"role": "user", "content": "Write a 4-line poem about monsoon rain in Mumbai."}],
+    stream=True,                      # ← the only change
+)
+for chunk in stream:                  # chunks arrive as they're generated
+    if chunk.choices and chunk.choices[0].delta.content:
+        print(chunk.choices[0].delta.content, end="", flush=True)</pre>
+    </div>
+    <div class="example"><span class="ico">🏏</span><div><b>Real-world example:</b> Live ball-by-ball cricket commentary (streaming) vs reading the full match report in tomorrow's newspaper (non-streaming).</div></div>
+  </div>
+</section>
+
+<!-- 8. MEMORY -->
+<section id="memory">
+  <div class="wrap">
+    <div class="sec-num">08 · CONVERSATION MEMORY</div>
+    <h2>Models don't remember. Your code does.</h2>
+    <p class="sub">Every API call is independent. To have a conversation, you resend the <b>whole history</b> each time and append the new message to the end.</p>
+    <div class="card">
+      <svg viewBox="0 0 960 230" role="img" aria-label="Each turn sends the full growing history: turn 1 sends one message, turn 2 sends three, turn 3 sends five">
+        <g font-size="12.5" font-weight="600">
+          <text x="10" y="22" fill="var(--ink-2)">Call #1</text>
+          <rect x="90" y="8" width="150" height="22" rx="6" fill="var(--brand)"/><text x="100" y="23" fill="#fff">user: Suggest a dinner</text>
+          <text x="10" y="92" fill="var(--ink-2)">Call #2</text>
+          <rect x="90" y="78" width="150" height="22" rx="6" fill="var(--brand)" opacity=".55"/><text x="100" y="93" fill="#fff">user: Suggest a dinner</text>
+          <rect x="246" y="78" width="170" height="22" rx="6" fill="var(--accent)" opacity=".55"/><text x="256" y="93" fill="#fff">assistant: Paneer tikka!</text>
+          <rect x="422" y="78" width="160" height="22" rx="6" fill="var(--brand)"/><text x="432" y="93" fill="#fff">user: Make it vegan</text>
+          <text x="10" y="162" fill="var(--ink-2)">Call #3</text>
+          <rect x="90" y="148" width="150" height="22" rx="6" fill="var(--brand)" opacity=".55"/><text x="100" y="163" fill="#fff">user: Suggest a dinner</text>
+          <rect x="246" y="148" width="170" height="22" rx="6" fill="var(--accent)" opacity=".55"/><text x="256" y="163" fill="#fff">assistant: Paneer tikka!</text>
+          <rect x="422" y="148" width="160" height="22" rx="6" fill="var(--brand)" opacity=".55"/><text x="432" y="163" fill="#fff">user: Make it vegan</text>
+          <rect x="588" y="148" width="180" height="22" rx="6" fill="var(--accent)" opacity=".55"/><text x="598" y="163" fill="#fff">assistant: Tofu tikka!</text>
+          <rect x="774" y="148" width="170" height="22" rx="6" fill="var(--brand)"/><text x="784" y="163" fill="#fff">user: Spicier please</text>
+        </g>
+        <path d="M90 205 H944" stroke="var(--warn)" stroke-width="2" marker-end="url(#ah2)"/>
+        <defs><marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--warn)"/></marker></defs>
+        <text x="517" y="225" text-anchor="middle" font-size="12.5" fill="var(--warn)" font-weight="600">history grows each turn, so input tokens (and cost) grow too</text>
+      </svg>
+    </div>
+    <div class="codebox">
+      <div class="codebar"><span class="fname">python/03_chatbot_memory.py (core loop)</span><button class="copy">Copy</button></div>
+<pre data-lang="py">history = [{"role": "system", "content": "You are a helpful cooking assistant."}]
+
+while True:
+    history.append({"role": "user", "content": input("You: ")})
+    reply = client.chat.completions.create(model=MODEL, messages=history)
+    answer = reply.choices[0].message.content
+    history.append({"role": "assistant", "content": answer})   # ← this IS the memory
+    print("Bot:", answer)</pre>
+    </div>
+    <div class="example"><span class="ico">🍽️</span><div><b>Real-world example:</b> A new waiter comes to your table every few minutes. To get the right dish, you hand each one the full list of what you've already ordered and said.</div></div>
+  </div>
+</section>
+
+<!-- 9. MODELS -->
+<section id="models">
+  <div class="wrap">
+    <div class="sec-num">09 · PICKING A MODEL</div>
+    <h2>Which open-source model should I use?</h2>
+    <p class="sub">Start with a strong all-rounder, then try smaller models for speed and lower cost. Switching is just one string, so test a few on your own prompts.</p>
+    <div class="card" style="margin-bottom:16px">
+      <svg viewBox="0 0 900 220" role="img" aria-label="Trade-off chart: smaller models are faster and cheaper, larger models are smarter">
+        <defs><marker id="ah3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink-3)"/></marker></defs>
+        <path d="M60 190 H880" stroke="var(--ink-3)" stroke-width="1.5" marker-end="url(#ah3)"/>
+        <path d="M60 190 V15" stroke="var(--ink-3)" stroke-width="1.5" marker-end="url(#ah3)"/>
+        <text x="870" y="212" text-anchor="end" font-size="12" fill="var(--ink-3)">bigger model → smarter, slower, pricier</text>
+        <text x="50" y="22" text-anchor="end" font-size="12" fill="var(--ink-3)" transform="rotate(-90 50 22)" dx="-120">quality</text>
+        <g font-size="12.5" font-weight="600">
+          <circle cx="150" cy="150" r="14" fill="var(--accent)"/><text x="172" y="146" fill="var(--ink)">Small (3–8B)</text><text x="172" y="162" fill="var(--ink-2)" font-weight="400">chat widgets, classification</text>
+          <circle cx="400" cy="100" r="20" fill="var(--brand)"/><text x="428" y="96" fill="var(--ink)">Medium–Large (24–70B)</text><text x="428" y="112" fill="var(--ink-2)" font-weight="400">best default for most apps</text>
+          <circle cx="720" cy="45" r="26" fill="var(--pink)"/><text x="660" y="88" fill="var(--ink)">Frontier (100B+, MoE)</text><text x="660" y="104" fill="var(--ink-2)" font-weight="400">hard reasoning, coding</text>
+        </g>
+      </svg>
+    </div>
+    <div class="tblwrap">
+      <table class="tbl">
+        <thead><tr><th>Family</th><th>Example model ID</th><th>Good for</th></tr></thead>
+        <tbody>
+          <tr><td><b>Meta Llama</b></td><td><code>meta-llama/Llama-3.3-70B-Instruct-Turbo</code></td><td><span class="tag">all-rounder</span><span class="tag">chat</span> great default</td></tr>
+          <tr><td><b>DeepSeek</b></td><td><code>deepseek-ai/DeepSeek-V3</code> · <code>deepseek-ai/DeepSeek-R1</code></td><td><span class="tag">coding</span><span class="tag">reasoning</span> R1 "thinks" step by step before it answers</td></tr>
+          <tr><td><b>Qwen</b></td><td><code>Qwen/Qwen2.5-7B-Instruct-Turbo</code></td><td><span class="tag">fast</span><span class="tag">multilingual</span> cheap and quick</td></tr>
+          <tr><td><b>OpenAI open-weight</b></td><td><code>openai/gpt-oss-120b</code></td><td><span class="tag">reasoning</span><span class="tag">tools</span></td></tr>
+          <tr><td><b>Mistral</b></td><td><code>mistralai/Mistral-Small-24B-Instruct-2501</code></td><td><span class="tag">efficient</span><span class="tag">EU-friendly</span></td></tr>
+          <tr><td><b>FLUX (images)</b></td><td><code>black-forest-labs/FLUX.1-schnell</code></td><td><span class="tag">text → image</span> see demo 08</td></tr>
+          <tr><td><b>BGE (embeddings)</b></td><td><code>BAAI/bge-base-en-v1.5</code></td><td><span class="tag">search</span><span class="tag">RAG</span> see demo 07</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note"><b>Model IDs change.</b> New models arrive often and old ones retire. Run <code>python python/00_list_models.py</code> to print what's live right now, with prices, or browse <a href="https://www.together.ai/models" target="_blank" rel="noopener">together.ai/models</a>. Copy the ID <i>exactly</i>, because it's case-sensitive.</div>
+  </div>
+</section>
+
+<!-- 10. EMBEDDINGS -->
+<section id="embed">
+  <div class="wrap">
+    <div class="sec-num">10 · BEYOND CHAT</div>
+    <h2>Embeddings: search by meaning, not keywords</h2>
+    <p class="sub">An embedding model turns text into a list of numbers, which you can think of as GPS coordinates on a "map of meaning". Sentences that mean similar things sit close together, even if they share no words.</p>
+    <div class="grid2">
+      <div class="card">
+        <svg viewBox="0 0 420 300" role="img" aria-label="Meaning map: 'I forgot my login details' lands next to 'How do I reset my password?' and far from delivery and returns questions">
+          <rect x="0" y="0" width="420" height="300" rx="14" fill="var(--surface-2)"/>
+          <g stroke="var(--line)" stroke-width="1"><path d="M0 75H420M0 150H420M0 225H420M105 0V300M210 0V300M315 0V300"/></g>
+          <circle cx="110" cy="85" r="46" fill="var(--accent)" opacity=".12"/>
+          <path d="M120 92 L92 76" stroke="var(--accent)" stroke-width="2" stroke-dasharray="4 3"/>
+          <g font-size="12">
+            <circle cx="88" cy="74" r="7" fill="var(--accent)"/><text x="40" y="54" fill="var(--ink)" font-weight="600">How do I reset my password?</text>
+            <circle cx="122" cy="94" r="7" fill="var(--brand)" stroke="#fff" stroke-width="2"/><text x="134" y="114" fill="var(--brand)" font-weight="700">“I forgot my login details”</text>
+            <circle cx="320" cy="200" r="6" fill="var(--ink-3)"/><text x="230" y="222" fill="var(--ink-2)">What are your delivery charges?</text>
+            <circle cx="350" cy="250" r="6" fill="var(--ink-3)"/><text x="248" y="275" fill="var(--ink-2)">Do you ship outside India?</text>
+            <circle cx="90" cy="230" r="6" fill="var(--ink-3)"/><text x="20" y="255" fill="var(--ink-2)">Can I return after 10 days?</text>
+          </g>
+          <text x="400" y="20" text-anchor="end" font-size="11" fill="var(--ink-3)">2-D sketch of a 768-D space</text>
+        </svg>
+      </div>
+      <div>
+        <div class="codebox" style="margin-top:0">
+          <div class="codebar"><span class="fname">python/07_embeddings_search.py</span><button class="copy">Copy</button></div>
+<pre data-lang="py">vectors = client.embeddings.create(
+    model="BAAI/bge-base-en-v1.5",
+    input=faqs + [question],
+).data
+# score each FAQ by closeness (cosine similarity)
+# → "How do I reset my password?" wins</pre>
+        </div>
+        <div class="example" style="margin-top:0"><span class="ico">📚</span><div><b>Real-world example:</b> A librarian who understands that “I forgot my login” is the same problem as “reset password”, even though the words differ. This is the foundation of <b>RAG</b>: you find the right documents first, then ask the chat model to answer using them.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 11. DEMOS -->
+<section id="demos">
+  <div class="wrap">
+    <div class="sec-num">11 · RUNNABLE DEMOS IN THIS REPO</div>
+    <h2>Learn by running, in order</h2>
+    <p class="sub">Each script is short and stands on its own. Run them from the repo root, for example: <code>python python/01_first_chat.py</code>.</p>
+    <div class="grid2">
+      <div class="demo"><span class="em">📋</span><div><span class="f">00_list_models.py</span><p>Print the live model "menu" with prices.</p></div></div>
+      <div class="demo"><span class="em">👋</span><div><span class="f">01_first_chat.py</span><p>One question → one answer (Goa packing list) + token usage.</p></div></div>
+      <div class="demo"><span class="em">⌨️</span><div><span class="f">02_streaming.py</span><p>Words appear live as the model writes a poem.</p></div></div>
+      <div class="demo"><span class="em">🧠</span><div><span class="f">03_chatbot_memory.py</span><p>Interactive cooking chatbot that remembers context.</p></div></div>
+      <div class="demo"><span class="em">⚖️</span><div><span class="f">04_compare_models.py</span><p>Same question to 3 models with speed and length compared.</p></div></div>
+      <div class="demo"><span class="em">🔌</span><div><span class="f">05_openai_sdk.py</span><p>Use the OpenAI library with Together by changing two lines.</p></div></div>
+      <div class="demo"><span class="em">🧾</span><div><span class="f">06_json_output.py</span><p>Turn a messy customer email into clean JSON fields.</p></div></div>
+      <div class="demo"><span class="em">🔎</span><div><span class="f">07_embeddings_search.py</span><p>Match a question to the right FAQ by meaning.</p></div></div>
+      <div class="demo"><span class="em">🎨</span><div><span class="f">08_generate_image.py</span><p>Create a watercolor image with FLUX and save it as a PNG.</p></div></div>
+      <div class="demo"><span class="em">🟨</span><div><span class="f">javascript/chat.mjs · stream.mjs</span><p>The same ideas in Node.js: <code>npm install</code>, then <code>node chat.mjs</code>.</p></div></div>
+    </div>
+
+    <h3>Structured JSON output (demo 06)</h3>
+    <div class="codebox">
+      <div class="codebar"><span class="fname">python/06_json_output.py</span><button class="copy">Copy</button></div>
+<pre data-lang="py">r = client.chat.completions.create(
+    model="meta-llama/Llama-3.3-70B-Instruct-Turbo",
+    messages=[
+        {"role": "system", "content": "Extract fields from the email. Reply with JSON only, using keys: "
+                                      "name, order_id, problem, wants (refund|replacement|other), phone."},
+        {"role": "user", "content": email},
+    ],
+    response_format={"type": "json_object"},
+    temperature=0,
+)
+data = json.loads(r.choices[0].message.content)
+# {"name": "Priya Sharma", "order_id": "A-1042", "problem": "broken mug", "wants": "replacement", ...}</pre>
+    </div>
+  </div>
+</section>
+
+<!-- 12. ERRORS -->
+<section id="errors">
+  <div class="wrap">
+    <div class="sec-num">12 · WHEN THINGS GO WRONG</div>
+    <h2>Common errors &amp; quick fixes</h2>
+    <div class="tblwrap">
+      <table class="tbl">
+        <thead><tr><th>You see</th><th>What it means</th><th>Fix</th></tr></thead>
+        <tbody>
+          <tr><td><code>TOGETHER_API_KEY … missing</code></td><td>The key isn't in your environment</td><td><code>export TOGETHER_API_KEY=…</code> or create <code>.env</code></td></tr>
+          <tr><td><code>401 Unauthorized</code></td><td>Key is wrong, expired or has a stray space</td><td>Copy it again from Settings → API Keys</td></tr>
+          <tr><td><code>402 / insufficient credits</code></td><td>Your balance is empty</td><td>Add credit under Billing</td></tr>
+          <tr><td><code>404 model not found</code></td><td>Typo in model ID, or the model was retired</td><td>Run <code>00_list_models.py</code> and copy the exact ID</td></tr>
+          <tr><td><code>400 … requires a dedicated endpoint</code></td><td>The model isn't served on demand (serverless)</td><td>Pick a serverless model, or deploy a dedicated endpoint</td></tr>
+          <tr><td><code>429 Too Many Requests</code></td><td>You hit the rate limit</td><td>Slow down or retry. The SDK retries twice automatically (<code>max_retries</code>)</td></tr>
+          <tr><td>Answer cut off mid-sentence</td><td><code>max_tokens</code> was reached</td><td>Increase <code>max_tokens</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Cheat sheet</h3>
+    <div class="codebox">
+      <div class="codebar"><span class="fname">everything on one screen</span><button class="copy">Copy</button></div>
+<pre data-lang="py">from together import Together
+client = Together()                                        # key from TOGETHER_API_KEY
+
+# chat
+client.chat.completions.create(model=M, messages=[...], temperature=0.7, max_tokens=300)
+# streaming
+for c in client.chat.completions.create(model=M, messages=[...], stream=True): ...
+# JSON
+client.chat.completions.create(model=M, messages=[...], response_format={"type": "json_object"})
+# embeddings
+client.embeddings.create(model="BAAI/bge-base-en-v1.5", input=["text 1", "text 2"])
+# images
+client.images.generate(model="black-forest-labs/FLUX.1-schnell", prompt="...", steps=4)
+# list models
+client.get("/v1/models", cast_to=object)</pre>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Built for learning. Model names and prices change over time, so check <a href="https://docs.together.ai" target="_blank" rel="noopener">docs.together.ai</a> for the latest. Code targets <code>together</code> Python SDK 3.x and <code>together-ai</code> npm 1.x.
+  </div>
+</footer>
+
+<script>
+(function(){
+  // ---------- theme toggle ----------
+  const root=document.documentElement, KEY="tg-theme";
+  try{const t=localStorage.getItem(KEY); if(t) root.dataset.theme=t;}catch(e){}
+  document.getElementById("themeBtn").addEventListener("click",()=>{
+    const dark = root.dataset.theme ? root.dataset.theme==="dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+    root.dataset.theme = dark ? "light" : "dark";
+    try{localStorage.setItem(KEY, root.dataset.theme);}catch(e){}
+  });
+
+  // ---------- tiny syntax highlighter ----------
+  const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  const KW={
+    py:"from import as def return for in if else elif while try except with True False None not and or print lambda class",
+    js:"import from const let var await async for of return new if else true false null",
+    sh:"export curl pip python source npm node"
+  };
+  document.querySelectorAll("pre[data-lang]").forEach(pre=>{
+    const lang=pre.dataset.lang, src=pre.textContent;
+    const kw=new Set(KW[lang].split(" "));
+    const com = lang==="js" ? "//[^\\n]*" : "#[^\\n]*";
+    const re=new RegExp(`(${com})|("(?:[^"\\\\\\n]|\\\\.)*"|'(?:[^'\\\\\\n]|\\\\.)*')|\\b(\\d+(?:\\.\\d+)?)\\b|([A-Za-z_][\\w]*)(?=\\()|([A-Za-z_][\\w]*)`,"g");
+    let out="", last=0, m;
+    while((m=re.exec(src))){
+      out+=esc(src.slice(last,m.index));
+      if(m[1]) out+=`<span class="tok-c">${esc(m[1])}</span>`;
+      else if(m[2]) out+=`<span class="tok-s">${esc(m[2])}</span>`;
+      else if(m[3]) out+=`<span class="tok-n">${m[3]}</span>`;
+      else if(m[4]) out+= kw.has(m[4])?`<span class="tok-k">${m[4]}</span>`:`<span class="tok-f">${m[4]}</span>`;
+      else if(m[5]) out+= kw.has(m[5])?`<span class="tok-k">${m[5]}</span>`:m[5];
+      last=re.lastIndex;
+    }
+    pre.innerHTML=out+esc(src.slice(last));
+  });
+
+  // ---------- copy buttons ----------
+  document.querySelectorAll(".copy").forEach(btn=>{
+    btn.addEventListener("click",async()=>{
+      const pre=btn.closest(".tabpanel, .codebox").querySelector("pre");
+      try{await navigator.clipboard.writeText(pre.innerText); btn.textContent="Copied ✓";}
+      catch(e){btn.textContent="Select & copy";}
+      setTimeout(()=>btn.textContent="Copy",1500);
+    });
+  });
+
+  // ---------- tabs ----------
+  document.querySelectorAll(".tabs").forEach(bar=>{
+    const btns=[...bar.querySelectorAll("button")];
+    btns.forEach(b=>b.addEventListener("click",()=>{
+      btns.forEach(x=>{x.setAttribute("aria-selected", x===b); document.getElementById(x.dataset.tab).hidden = x!==b;});
+    }));
+  });
+
+  // ---------- temperature ----------
+  const temps=[
+    {max:.25, hint:"Low temperature: the model picks the most likely word every time. Run it 3 times and you get the same answer 3 times.", outs:["Chai Corner","Chai Corner","Chai Corner"]},
+    {max:.85, hint:"Medium: sensible answers with some variety. This is a good default for most apps.", outs:["Chai Corner","The Kettle House","Brew &amp; Banter"]},
+    {max:1.2, hint:"High: more surprising and creative, which suits brainstorming.", outs:["Steam Stories","The Cardamom Cloud","Kulhad Republic"]},
+    {max:9, hint:"Very high: results get strange and may stop making sense. Rarely useful.", outs:["Moonleaf Teaspiral","Gingerquantum Sips","Purple Kettle Thunder"]}
+  ];
+  const tIn=document.getElementById("temp"), tOut=document.getElementById("tempOuts");
+  function renderTemp(){
+    const v=parseFloat(tIn.value); document.getElementById("tval").textContent=v.toFixed(1);
+    const t=temps.find(x=>v<=x.max);
+    tOut.innerHTML=t.outs.map((o,i)=>`<div class="temp-out"><span style="color:var(--ink-3);font:12px 'JetBrains Mono'">run ${i+1} →</span> ${o}</div>`).join("");
+    document.getElementById("tempHint").textContent=t.hint;
+  }
+  tIn.addEventListener("input",renderTemp); renderTemp();
+
+  // ---------- token / cost calculator ----------
+  const colors=["var(--brand-soft)","var(--accent-soft)","var(--warn-soft)","var(--pink-soft)"];
+  function approxTokens(text){
+    // rough visual split: words, with long words broken into ~4-char pieces, punctuation separate
+    const parts=text.match(/\s?[A-Za-z]+|\s?\d+|\s?[^\sA-Za-z\d]/g)||[];
+    const toks=[];
+    parts.forEach(p=>{ if(p.trim().length>6){const lead=p.startsWith(" ")?" ":""; let w=p.trim(); toks.push(lead+w.slice(0,4)); w=w.slice(4); while(w.length){toks.push(w.slice(0,4)); w=w.slice(4);} } else toks.push(p); });
+    return toks;
+  }
+  const $=id=>document.getElementById(id);
+  const fmt=n=> n<0.01 ? "$"+n.toFixed(5) : "$"+n.toFixed(n<10?2:0).replace(/\B(?=(\d{3})+(?!\d))/g,",");
+  function calc(){
+    const toks=approxTokens($("ctext").value);
+    $("tokViz").innerHTML=toks.map((t,i)=>`<span style="background:${colors[i%4]}">${esc(t).replace(/ /g,"&nbsp;")}</span>`).join("")+`<span style="color:var(--ink-3)">= ${toks.length} tokens</span>`;
+    const inT=toks.length+30; // + system prompt / formatting overhead
+    const outT=Math.round((+$("cout").value||0)/0.75);
+    const per=(inT*(+$("pin").value||0)+outT*(+$("pout").value||0))/1e6;
+    const day=per*(+$("creq").value||0);
+    $("cin").textContent=inT.toLocaleString(); $("cot").textContent=outT.toLocaleString();
+    $("creqc").textContent=fmt(per); $("cday").textContent=fmt(day); $("cmonth").textContent=fmt(day*30);
+  }
+  ["ctext","creq","cout","pin","pout"].forEach(id=>$(id).addEventListener("input",calc)); calc();
+
+  // ---------- streaming demo ----------
+  const poem="Grey clouds roll over Marine Drive,\nthe sea leaps up to taste the rain,\nchai steams in every corner stall,\nand Mumbai breathes in green again.";
+  let timers=[];
+  $("streamBtn").addEventListener("click",()=>{
+    timers.forEach(clearTimeout); timers=[];
+    const A=$("scrA"), B=$("scrB"), words=poem.split(/(\s+)/);
+    A.innerHTML='<span class="wait">⏳ waiting for the full answer…</span>'; B.innerHTML="";
+    const total=words.length*55;
+    words.forEach((w,i)=>timers.push(setTimeout(()=>{B.innerHTML=esc(words.slice(0,i+1).join("")).replace(/\n/g,"<br>")+(i<words.length-1?'<span class="cursor"></span>':"");}, i*55+150)));
+    timers.push(setTimeout(()=>{A.innerHTML=esc(poem).replace(/\n/g,"<br>");}, total+150));
+  });
+})();
+</script>
+</body>
+</html>

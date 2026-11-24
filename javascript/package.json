@@ -1,0 +1,12 @@
+{
+  "name": "togetherai-js-demo",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "chat": "node chat.mjs",
+    "stream": "node stream.mjs"
+  },
+  "dependencies": {
+    "together-ai": "^1.2.0"
+  }
+}
